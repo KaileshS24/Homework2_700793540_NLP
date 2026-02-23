@@ -1,0 +1,43 @@
+from collections import defaultdict
+
+corpus = [
+    ["<s>", "I", "love", "NLP", "</s>"],
+    ["<s>", "I", "love", "deep", "learning", "</s>"],
+    ["<s>", "deep", "learning", "is", "fun", "</s>"]
+]
+
+unigram_counts = defaultdict(int)
+bigram_counts = defaultdict(int)
+
+# Count unigrams and bigrams
+for sentence in corpus:
+    for i in range(len(sentence)):
+        unigram_counts[sentence[i]] += 1
+        if i > 0:
+            bigram = (sentence[i-1], sentence[i])
+            bigram_counts[bigram] += 1
+
+# Bigram probability (MLE)
+def bigram_prob(w1, w2):
+    return bigram_counts[(w1, w2)] / unigram_counts[w1]
+
+# Sentence probability
+def sentence_prob(sentence):
+    prob = 1
+    for i in range(1, len(sentence)):
+        prob *= bigram_prob(sentence[i-1], sentence[i])
+    return prob
+
+s1 = ["<s>", "I", "love", "NLP", "</s>"]
+s2 = ["<s>", "I", "love", "deep", "learning", "</s>"]
+
+p1 = sentence_prob(s1)
+p2 = sentence_prob(s2)
+
+print("Sentence 1 Probability:", p1)
+print("Sentence 2 Probability:", p2)
+
+if p1 > p2:
+    print("Model prefers Sentence 1")
+else:
+    print("Model prefers Sentence 2")
